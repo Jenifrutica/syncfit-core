@@ -54,6 +54,25 @@ syncfit-core/
 
 Python 3.11+, SciPy, NumPy, scikit-learn, XGBoost.
 
+## Tasks
+
+> **Language: Python 3.11+ (mandatory).**
+
+### Requirements
+
+- [ ] Implement the Butterworth IIR band-pass filter (0.5 Hz – 5.0 Hz).
+- [ ] Implement R-R peak detection.
+- [ ] Implement the RMSSD computation.
+- [ ] Implement artifact rejection.
+- [ ] Build the feature vector `[modality, day/week, ΔT, RMSSD, % isometric loss]`.
+- [ ] Train the supervised tabular model (Random Forest / XGBoost).
+- [ ] Compute the central-fatigue probability.
+- [ ] Compute the load multiplier `k_load ∈ [0.70, 1.05]`.
+- [ ] Implement the **Directed State Graph** for phase and trimester states.
+- [ ] Implement the **Ring Buffer** and the **sliding-window deque**.
+- [ ] Serialize model artifacts.
+- [ ] Write unit tests with reproducible fixtures.
+
 ## Related repositories
 
 - [`syncfit-contracts`](../syncfit-contracts) — I/O schemas.
