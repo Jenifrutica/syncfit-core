@@ -34,25 +34,77 @@ Clean the raw PPG signal, compute autonomic biomarkers, and produce an objective
 
 The Ring Buffer is mandatory per the technical document, which specifies it in both C++ and Python.
 
-## Suggested structure
+## Repository layout
 
 ```
 syncfit-core/
 ├── syncfit_core/
-│   ├── dsp/            # filters, R-R detection, RMSSD
-│   ├── features/       # feature vector construction
-│   ├── models/         # training pipeline, serialized models
-│   ├── load/           # k_load calculation
-│   └── graph/          # Directed State Graph
+│   ├── enums.py             # Modality, phases, trimesters, fatigue levels
+│   ├── structures/          # RingBuffer, SlidingWindow, FenwickTree
+│   ├── dsp/                 # Butterworth filter, R-R detection, RMSSD
+│   ├── features/            # feature-vector construction
+│   ├── models/              # fatigue classifier + training pipeline
+│   ├── load/                # deterministic k_load multiplier
+│   ├── graph/               # Directed State Graph
+│   ├── pipeline.py          # SyncFitEngine (end-to-end)
+│   └── contracts_adapter.py # optional bridge to syncfit-contracts
 ├── tests/
-├── notebooks/          # exploratory analysis only
+├── notebooks/               # exploratory analysis only
 ├── pyproject.toml
 └── README.md
 ```
 
+## Usage
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+```python
+from syncfit_core import SyncFitEngine, train_default_model
+
+model = train_default_model(n_samples=4000, seed=42)
+engine = SyncFitEngine(model, window_size=256)
+
+# Ingest a 100 Hz PPG window and evaluate biomarkers.
+engine.ingest(ppg_samples)
+result = engine.evaluate(
+    modality="MENSTRUAL_CYCLE",
+    day_or_week=14,
+    delta_temperature_c=0.42,
+    isometric_force_loss_pct=12.8,
+)
+print(result.as_dict())
+# {'phase_inferred': 'OVULATORY', 'fatigue_level': ..., 'k_load_multiplier': 0.72, ...}
+```
+
+Train and persist a model from the command line:
+
+```bash
+syncfit-train --samples 4000 --backend RANDOM_FOREST --output models/artifacts/fatigue_model.joblib
+```
+
+> `syncfit-contracts` is optional. When installed
+> (`pip install -e ".[contracts]"`, which pulls the package from the
+> [`syncfit-contracts`](https://github.com/Jenifrutica/syncfit-contracts) repository),
+> `syncfit_core.contracts_adapter` validates the adapted-routine payload against
+> the shared schema.
+
+## Data Structures
+
+| Structure | Complexity | Purpose |
+|-----------|:----------:|---------|
+| **Ring Buffer** | O(1) insert | Python-side buffer for the continuous 100 Hz PPG stream. |
+| **Sliding Window** (deque) | O(1) append | Segmenting the signal for filtering and peak detection. |
+| **Directed State Graph** | Graph traversal | Menstrual → follicular → ovulatory → luteal; trimester 1 → 2 → 3, with weighted probabilistic edges for irregularities. |
+| **Fenwick Tree (BIT)** | O(log n) | Optional: lighter range aggregates when a full segment tree is unnecessary. |
+
+The Ring Buffer is mandatory per the technical document, which specifies it in both C++ and Python.
+
 ## Stack
 
-Python 3.11+, SciPy, NumPy, scikit-learn, XGBoost.
+Python 3.11+, NumPy, SciPy, scikit-learn, joblib; optional XGBoost and `syncfit-contracts`.
 
 ## Tasks
 
@@ -60,18 +112,18 @@ Python 3.11+, SciPy, NumPy, scikit-learn, XGBoost.
 
 ### Requirements
 
-- [ ] Implement the Butterworth IIR band-pass filter (0.5 Hz – 5.0 Hz).
-- [ ] Implement R-R peak detection.
-- [ ] Implement the RMSSD computation.
-- [ ] Implement artifact rejection.
-- [ ] Build the feature vector `[modality, day/week, ΔT, RMSSD, % isometric loss]`.
-- [ ] Train the supervised tabular model (Random Forest / XGBoost).
-- [ ] Compute the central-fatigue probability.
-- [ ] Compute the load multiplier `k_load ∈ [0.70, 1.05]`.
-- [ ] Implement the **Directed State Graph** for phase and trimester states.
-- [ ] Implement the **Ring Buffer** and the **sliding-window deque**.
-- [ ] Serialize model artifacts.
-- [ ] Write unit tests with reproducible fixtures.
+- [x] Implement the Butterworth IIR band-pass filter (0.5 Hz – 5.0 Hz).
+- [x] Implement R-R peak detection.
+- [x] Implement the RMSSD computation.
+- [x] Implement artifact rejection.
+- [x] Build the feature vector `[modality, day/week, ΔT, RMSSD, % isometric loss]`.
+- [x] Train the supervised tabular model (Random Forest / XGBoost).
+- [x] Compute the central-fatigue probability.
+- [x] Compute the load multiplier `k_load ∈ [0.70, 1.05]`.
+- [x] Implement the **Directed State Graph** for phase and trimester states.
+- [x] Implement the **Ring Buffer** and the **sliding-window deque**.
+- [x] Serialize model artifacts.
+- [x] Write unit tests with reproducible fixtures.
 
 ## Related repositories
 

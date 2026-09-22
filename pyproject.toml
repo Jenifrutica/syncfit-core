@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "syncfit-core"
+version = "0.1.0"
+description = "SyncFit Edge deterministic engine: DSP, trained tabular fatigue model and k_load load multiplier."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "scikit-learn>=1.3",
+    "joblib>=1.3",
+]
+
+[project.optional-dependencies]
+xgboost = ["xgboost>=2.0"]
+contracts = [
+    "syncfit-contracts @ git+https://github.com/Jenifrutica/syncfit-contracts.git#subdirectory=python",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+syncfit-train = "syncfit_core.models.training:_main"
+
+[tool.setuptools]
+packages = [
+    "syncfit_core",
+    "syncfit_core.structures",
+    "syncfit_core.dsp",
+    "syncfit_core.features",
+    "syncfit_core.models",
+    "syncfit_core.load",
+    "syncfit_core.graph",
+]
+
+[tool.setuptools.package-data]
+syncfit_core = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
