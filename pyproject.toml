@@ -18,7 +18,9 @@ dependencies = [
 
 [project.optional-dependencies]
 xgboost = ["xgboost>=2.0"]
-contracts = ["syncfit-contracts"]
+contracts = [
+    "syncfit-contracts @ git+https://github.com/Jenifrutica/syncfit-contracts.git#subdirectory=python",
+]
 dev = [
     "pytest>=8.0",
 ]

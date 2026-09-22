@@ -85,7 +85,9 @@ Train and persist a model from the command line:
 syncfit-train --samples 4000 --backend RANDOM_FOREST --output models/artifacts/fatigue_model.joblib
 ```
 
-> `syncfit-contracts` is optional. When installed (`pip install -e ".[contracts]"`),
+> `syncfit-contracts` is optional. When installed
+> (`pip install -e ".[contracts]"`, which pulls the package from the
+> [`syncfit-contracts`](https://github.com/Jenifrutica/syncfit-contracts) repository),
 > `syncfit_core.contracts_adapter` validates the adapted-routine payload against
 > the shared schema.
 
