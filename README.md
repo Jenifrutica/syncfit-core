@@ -133,3 +133,26 @@ Python 3.11+, NumPy, SciPy, scikit-learn, joblib; optional XGBoost and `syncfit-
 - [`syncfit-simulator`](../syncfit-simulator) — feeds test signals.
 
 All code, comments, documentation and commits in this repository are written in English.
+
+## Context for a new session
+
+**What it is.** Deterministic numerical engine (the on-premise "AI"): DSP,
+trained tabular model and the deterministic `k_load`. Pure Python library.
+
+**Stack.** Python 3.11+, NumPy, SciPy, scikit-learn (+ optional XGBoost), joblib.
+
+**Layout.** `syncfit_core/`: `dsp/` (Butterworth 0.5-5.0 Hz, R-R peaks, RMSSD),
+`features/`, `models/` (RandomForest/XGBoost + `training.py` synthetic dataset +
+`syncfit-train` CLI), `load/` (`k_load` in [0.70,1.05]), `graph/` (Directed State
+Graph + `infer_phase_from_day`), `structures/` (RingBuffer, SlidingWindow,
+FenwickTree), `pipeline.py` (`SyncFitEngine`), `contracts_adapter.py`.
+
+**Key outputs.** `EngineResult{phase_inferred, fatigue_probability,
+fatigue_level, k_load, rmssd_hrv_ms, features}`.
+
+**Used by.** ai-reasoning and backend import this. Simulator feeds it.
+
+**Run tests.** `pytest` (63 tests).
+
+**Data structures.** Ring Buffer (O(1)), Sliding Window, Fenwick (O(log n)),
+Directed State Graph.
