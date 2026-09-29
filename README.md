@@ -134,6 +134,23 @@ Python 3.11+, NumPy, SciPy, scikit-learn, joblib; optional XGBoost and `syncfit-
 
 All code, comments, documentation and commits in this repository are written in English.
 
+## Handoff for the team
+
+**Role.** Local AI: deterministic numerical engine (DSP + RandomForest/XGBoost →
+central fatigue + `k_load`) plus the Directed State Graph. No LLM, no network.
+
+**Run / test.** `pip install -e ".[dev]"` · `pytest`. Train a model:
+`syncfit-train --output model.joblib`.
+
+**Entry points.** `SyncFitEngine` (`ingest`, `evaluate`), `EngineResult`,
+`process_signal`, `FatigueModel`/`train_default_model`, `compute_k_load`,
+`default_cycle_graph`/`infer_phase_from_day`, and the data structures
+(`RingBuffer`, `SlidingWindow`, `FenwickTree`).
+
+**Interface.** Produces `EngineResult {phase_inferred, fatigue_level, k_load,
+rmssd_hrv_ms, features}`; the backend turns it into a `PhysiologicalAssessment`
+for DeepSeek. `k_load` is authoritative and never recomputed downstream.
+
 ## Context for a new session
 
 **What it is.** Deterministic numerical engine (the on-premise "AI"): DSP,
