@@ -173,3 +173,11 @@ fatigue_level, k_load, rmssd_hrv_ms, features}`.
 
 **Data structures.** Ring Buffer (O(1)), Sliding Window, Fenwick (O(log n)),
 Directed State Graph.
+
+## Roadmap · Qué falta (español)
+
+> Estado: **implementado** (DSP, modelo ML, `k_load`, grafo y estructuras).
+
+- (Opcional) Integrar el **Grafo Dirigido** dentro del pipeline (hoy se usa `infer_phase_from_day`).
+- (Opcional) Notebooks de experimentación con datos reales.
+- (Opcional) Endurecer tests del adaptador de contratos.
