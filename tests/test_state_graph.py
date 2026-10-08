@@ -54,3 +54,26 @@ def test_infer_gestational_phase(week, expected):
 def test_infer_invalid_day():
     with pytest.raises(ValueError):
         infer_phase_from_day(Modality.MENSTRUAL_CYCLE, 0)
+
+
+@pytest.mark.parametrize(
+    "length,day,expected",
+    [
+        (28, 13, InferredPhase.FOLLICULAR),
+        (28, 14, InferredPhase.OVULATORY),
+        (28, 17, InferredPhase.LUTEAL),
+        (35, 16, InferredPhase.FOLLICULAR),
+        (35, 21, InferredPhase.OVULATORY),
+        (35, 24, InferredPhase.LUTEAL),
+        (24, 10, InferredPhase.OVULATORY),
+        (24, 3, InferredPhase.MENSTRUAL),
+    ],
+)
+def test_infer_phase_with_cycle_length(length, day, expected):
+    assert infer_phase_from_day(Modality.MENSTRUAL_CYCLE, day, cycle_length_days=length) is expected
+
+
+@pytest.mark.parametrize("length", [20, 46])
+def test_infer_phase_invalid_cycle_length(length):
+    with pytest.raises(ValueError):
+        infer_phase_from_day(Modality.MENSTRUAL_CYCLE, 5, cycle_length_days=length)
