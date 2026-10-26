@@ -111,16 +111,24 @@ def default_cycle_graph() -> DirectedStateGraph:
     return graph
 
 
-def infer_phase_from_day(modality: Modality | str, day_or_week: int) -> InferredPhase:
+def infer_phase_from_day(
+    modality: Modality | str, day_or_week: int, cycle_length_days: int = 28
+) -> InferredPhase:
     """Deterministically map a day/week to a phase.
 
     Menstrual cycle: a 28-day reference cycle split into menstrual (1-5),
     follicular (6-13), ovulatory (14-16) and luteal (17+). Gestation: weeks 1-13
     are the first trimester, 14-27 the second and 28+ the third.
+
+    For other cycle lengths the luteal phase keeps its ~14 days, so ovulation
+    moves with the length (day L-14 to L-12) and the follicular phase absorbs
+    the difference. The default of 28 keeps the reference split.
     """
     modality_value = modality if isinstance(modality, Modality) else Modality(modality)
     if day_or_week < 1:
         raise ValueError("day_or_week must be positive")
+    if not 21 <= cycle_length_days <= 45:
+        raise ValueError("cycle_length_days must be between 21 and 45")
 
     if modality_value is Modality.GESTATIONAL:
         if day_or_week <= 13:
@@ -129,11 +137,12 @@ def infer_phase_from_day(modality: Modality | str, day_or_week: int) -> Inferred
             return InferredPhase.TRIMESTER_2
         return InferredPhase.TRIMESTER_3
 
+    ovulation_start = cycle_length_days - 14
     if day_or_week <= 5:
         return InferredPhase.MENSTRUAL
-    if day_or_week <= 13:
+    if day_or_week < ovulation_start:
         return InferredPhase.FOLLICULAR
-    if day_or_week <= 16:
+    if day_or_week <= ovulation_start + 2:
         return InferredPhase.OVULATORY
     return InferredPhase.LUTEAL
 
