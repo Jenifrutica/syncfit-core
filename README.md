@@ -169,7 +169,7 @@ fatigue_level, k_load, rmssd_hrv_ms, features}`.
 
 **Used by.** ai-reasoning and backend import this. Simulator feeds it.
 
-**Run tests.** `pytest` (63 tests).
+**Run tests.** `pytest` (84 tests; the contracts enum check runs when `syncfit-contracts` is checked out next to this repo).
 
 **Data structures.** Ring Buffer (O(1)), Sliding Window, Fenwick (O(log n)),
 Directed State Graph.
