@@ -1,5 +1,7 @@
 # SyncFit Core
 
+**Live app:** https://syncfit.jenilarper.dev
+
 Deterministic numerical engine of SyncFit Edge: digital signal processing, the trained tabular model, and the load multiplier. It is a pure Python library, imported by the backend, with no network or UI concerns.
 
 This is the **trained, on-premise half** of the artificial intelligence. The cloud reasoning half lives in [`syncfit-ai-reasoning`](../syncfit-ai-reasoning).
@@ -181,3 +183,9 @@ Directed State Graph.
 - (Opcional) Integrar el **Grafo Dirigido** dentro del pipeline (hoy se usa `infer_phase_from_day`).
 - (Opcional) Notebooks de experimentación con datos reales.
 - (Opcional) Endurecer tests del adaptador de contratos.
+
+## Data structures
+
+- `RingBuffer[T]` (generic, NumPy-backed): fixed window of the incoming PPG signal for the DSP pipeline, O(1) append.
+- `DirectedStateGraph`: directed graph of physiological states (cycle phases / trimesters) and their transitions, used to infer the phase.
+- `FenwickTree` and `SlidingWindow` are exported for O(log n) range sums and bounded windows.
